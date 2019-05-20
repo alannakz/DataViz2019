@@ -1,0 +1,235 @@
+---
+title: "index"
+author: "Alanna Kaiser"
+date: "5/20/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## About Me
+
+My name is Alanna Kaiser and I am an MSW candidate at the University of Michigan. In U-M's social work program, I am concentrating my studies in Social Policy and Evaluation, with a particular interest in communities and social systems. I have professional experience working in education, housing, and community-based development and neighborhood revitalization.  
+
+### Current Work
+
+This summer, I am working as a Measurement and Evaluation intern with Habitat for Humanity Greater San Francisco. In this role, I am specifically conducting research and implementing a program evaluation to aid the Neighborhood Revitalization (NR) and Homeowner Development Departments (HDD), respectively.  With NR, I am compiling evidence to support Habitat’s work in green space improvement in the Bayview Neighborhood of San Francisco. With HDD, I am conducting an internal evaluation to map the lifecycles of each program, highlighting key stages, accompanying process documentation, and stakeholders engaged. 
+
+## My Portfolio
+
+In the coming weeks, I will add content to this online space that showcases my growing data visualization and analysis skills. The following is a small sampling of that work:
+
+# Data Visualization in R {.tabset .tabset-fade} 
+
+This is a small sampling of my work depicting census data with R Statistical software, utelizing R's census api. 
+
+## Base R
+
+```{r}
+
+library(tidycensus)
+library(tidyverse)
+
+RaceWAYNE<-get_acs(geography = "county",
+                      variables = c(
+"B02001_002",  
+"B02001_003", 
+"B02001_004", 
+"B02001_005", 
+"B02001_006", 
+"B02001_007", 
+"B02001_008"),
+                      state = "mi",
+                      county="163",
+                      year=2017)
+
+RaceWAYNE$NAME<-'Wayne'
+RaceWAYNE$estimate_pct = (RaceWAYNE$estimate / sum(RaceWAYNE$estimate))*100
+
+library(RColorBrewer)
+coul <- brewer.pal(7, "Blues")
+
+barplot(RaceWAYNE$estimate_pct, main="Racial Groups in Wayne County, MI",
+        ylab = "% of Total Population", 
+        names.arg=c("White", "Black/\nAfrican \nAmerican",
+                    "American\n Indian & \nAlaska Native",
+                    "Asian", "Native\nHawaiian &\nPacific Islander",
+                    "Other", "Two or More\n Races"),
+        col=coul, las=2, cex.names = .73)
+par(mar=c(18,6,2,1)+.1)
+
+```
+
+## Ggplot2 Paired Bar Graph
+
+```{r}
+
+library(tidycensus)
+library(tidyverse)
+
+RaceWASH<-get_acs(geography = "county", 
+                  variables = c(
+                    "B02001_002", #White 
+                    "B02001_003", #Black
+                    "B02001_004", #American Indian and Alasks Native
+                    "B02001_005", #Asian
+                    "B02001_006", #Native Hawaiian and Pacific Islander
+                    "B02001_007", #Other
+                    "B02001_008"),#Two or more races
+                  state = "mi",
+                  county="161",
+                  year=2017)
+RaceWAYNE<-get_acs(geography = "county",
+                   variables = c(
+                     "B02001_002", #White 
+                     "B02001_003", #Black
+                     "B02001_004", #American Indian and Alasks Native
+                     "B02001_005", #Asian
+                     "B02001_006", #Native Hawaiian and Pacific Islander
+                     "B02001_007", #Other
+                     "B02001_008"),#two or more races
+                   state = "mi",
+                   county="163",
+                   year=2017)
+RaceWASH$NAME<-'Washtenaw'
+RaceWAYNE$NAME<-'Wayne'
+RaceWASH$estimate_pct=(RaceWASH$estimate/sum(RaceWASH$estimate))*100
+RaceWAYNE$estimate_pct = (RaceWAYNE$estimate / sum(RaceWAYNE$estimate))*100
+RaceBOTH<-rbind(RaceWASH,RaceWAYNE)
+
+vcounty<-RaceBOTH$NAME
+vrace<-c("White", "Black/\nAfrican American",
+         "American Indian\n and Alaska Native",
+         "Asian", "Native Hawaiian\n and Pacific Islander",
+         "Other", "Two or More\n Races","White", "Black/\nAfrican American",
+         "American Indian\n and Alaska Native",
+         "Asian", "Native Hawaiian\n and Pacific Islander",
+         "Other", "Two or More\n Races")
+vPercent<-RaceBOTH$estimate_pct
+GroupedData<-data.frame(vcounty,vrace,vPercent)
+
+library(ggplot2)
+library(ggthemes)
+
+ggplot(data = GroupedData, aes(x=vrace,y=vPercent,fill=vcounty))+
+  geom_bar(alpha=.6,colour="black", stat="identity",position = position_dodge())+
+  theme_few()+
+labs(title = "Breakdown of Racial Groups",
+     y="% of Total Population")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(axis.title.x = element_blank(),
+        legend.position = "bottom",
+        plot.title = element_text(face = "bold",hjust = ".5"))+
+  theme(axis.title.y = element_text(face = "bold", size=11))+
+  theme(legend.title = element_text(size=11,face="bold"))+
+  scale_fill_manual(name= "County", values=c("Washtenaw"= "lightblue4",
+                                             "Wayne"= "cadetblue2"))
+
+```
+
+## gglplot2 Normal Bar Chart
+ 
+```{r}
+
+library(tidycensus)
+library(tidyverse)
+
+Income<-get_acs(geography = "county", 
+                  variables ="B19013_001",
+                  state = "mi",
+                  county=c("161","163"),
+                  year=2017)
+library(ggplot2)
+library(ggthemes)
+library(scales)
+
+ggplot(Income,
+       aes(x=NAME, y=estimate, fill=NAME))+
+  geom_bar(stat="identity", color= "black", alpha=.5)+
+  theme_few()+
+  scale_fill_manual(values=c("Washtenaw County, Michigan"= "lightblue4",
+                             "Wayne County, Michigan"= "cadetblue2"))+
+  theme(legend.position = "bottom")+
+  labs(title = "Median Household Income", y= "Income ($)")+
+  theme(legend.position="none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        plot.title = element_text(face = "bold",hjust = ".5", size = "15"),
+        axis.text.y = element_text(face="bold"),
+        axis.text.x = element_text(face="bold"))+
+  scale_y_continuous(labels = dollar)
+```
+```{r, echo=TRUE, eval=FALSE}
+#Code used for Median Income graph above (excluding data collection):
+ggplot(Income,
+       aes(x=NAME, y=estimate, fill=NAME))+
+  geom_bar(stat="identity", color= "black", alpha=.5)+
+  theme_few()+
+  scale_fill_manual(values=c("Washtenaw County, Michigan"= "dlightblue4",
+                             "Wayne County, Michigan"= "darkturquoise"))+
+  theme(legend.position = "bottom")+
+  labs(title = "Median Household Income", y= "Income ($)")+
+  theme(legend.position="none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        plot.title = element_text(face = "bold",hjust = ".5", size = "15"),
+        axis.text.y = element_text(face="bold"),
+        axis.text.x = element_text(face="bold"))+
+  scale_y_continuous(labels = dollar)
+
+```
+
+
+## ggplot2 Density Plot
+
+
+```{r}
+library(tidycensus)
+library(tidyverse)
+library(dplyr)
+
+HousingWASH<-get_acs(geography = "tract", 
+                     variables = "B25077_001",
+                     state = "mi",
+                     county="161",
+                     year=2017)
+HousingWAYNE<-get_acs(geography = "tract",
+                      variables = "B25077_001",
+                      state = "mi",
+                      county="163",
+                      year=2017)
+HousingWASH$NAME<-'Washtenaw'
+HousingWAYNE$NAME<-'Wayne'
+BothCounties<-rbind(HousingWASH,HousingWAYNE)
+BothCountiesClean<-BothCounties %>% filter(!is.na(estimate))
+
+options(scipen = 999)
+
+library(ggplot2)
+library(ggthemes)
+library(sitools)
+
+ggplot(BothCountiesClean,
+       aes(x=estimate, fill = NAME)) + geom_density(alpha=.5)+
+  theme_few()+
+  labs(title = "A Tale of Two Counties",
+       subtitle = "Home Values, Compared",
+       x="Median Home Value ($)")+
+  theme(plot.title = element_text(face="bold"))+
+  theme(axis.title.x = element_text(size=11,face="bold"))+
+  scale_x_log10("Median Home Value ($)", labels=f2si)+
+  theme(axis.title.y = element_text(size=11, face="bold"))+
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position = "bottom")+
+  theme(plot.title = element_text(hjust = .5))+
+  theme(plot.subtitle = element_text(hjust = .5))+
+theme(legend.title = element_text(size=11,face="bold"))+
+  scale_fill_manual(name= "County", values=c("Washtenaw"= "lightblue4",
+                             "Wayne"= "cadetblue2"))
+```
+
+
