@@ -1,7 +1,7 @@
 ---
 title: "Winter Portfolio"
 author: "Alanna Kaiser"
-date: "5/17/2019"
+date: "5/20/2019"
 output:
   html_document:
     code_folding: hide
