@@ -1,8 +1,9 @@
 ---
 title: "My GitHub Space"
 author: "Alanna Kaiser"
-date: "Last Updated: 5/20/2019"
+date: "`r Sys.Date()`"
 output: html_document
+
 ---
 
 ```{r setup, include=FALSE}
