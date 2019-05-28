@@ -2,7 +2,62 @@
 title: "My GitHub Space"
 author: "Alanna Kaiser"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    highlight: haddock
+    number_sections: yes
+    theme: default
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  revealjs::revealjs_presentation:
+    fig_height: 4
+    highlight: haddock
+    reveal_options:
+      chalkboard:
+        theme: chalkboard
+        toggleChalkboardButton: yes
+        toggleNotesButton: yes
+      previewLinks: yes
+      progress: yes
+      slideNumber: yes
+    reveal_plugins:
+    - chalkboard
+    - zoom
+    self_contained: no
+    theme: solarized
+    transition: convex
+  bookdown::epub_book: default  
+  bookdown::gitbook:
+    highlight: haddock
+    css: styles.css
+    config:
+      download:
+      - introduction-to-R.pdf
+      - introduction-to-R.epub
+  tint::tintPdf:
+    highlight: haddock
+    number_sections: yes
+    toc: yes
+  radix::radix_article:
+    toc: true
+    toc_depth: 2
+  pagedown::html_paged: 
+    highlight: haddock
+    toc: yes
+    number_sections: yes
+    theme: default
+  tint::tintHtml:
+    highlight: haddock
+    number_sections: yes
+    toc: yes
+  tufte::tufte_handout:
+    fig_height: 2.5
+    toc: yes
+    number_sections: yes
+    latex_engine: xelatex
+---
 
 ---
 
