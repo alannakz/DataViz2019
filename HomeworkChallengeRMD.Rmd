@@ -120,3 +120,57 @@ ggplotly(p)
 ```
 
 
+##Graphing Multiple Outcomes by Year
+
+```{r}
+library(WDI)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(DT)
+
+WorldBankData2<- WDI(country = c("US","NPL","IND","CAN","CHN", "FIN","TZA","VEN", "KEN", "JAM", "LBR"),
+                    indicator=c("SI.POV.GINI", # Gini
+                                "NY.GDP.PCAP.CD", # GDP
+                                "SP.DYN.LE00.IN", # life expectancy
+                                "SP.POP.TOTL", # population
+                                "SN.ITK.DEFC.ZS"), # undernourishment
+                    start = 1980,
+                    end=2017,
+                    extra = TRUE)
+save(WorldBankData2, file = "WorldBankData2.RData")
+
+WorldBankData2 <- dplyr::rename(WorldBankData2, 
+                        GDP = NY.GDP.PCAP.CD,
+                        life_expectancy = SP.DYN.LE00.IN, 
+                        population = SP.POP.TOTL,
+                        Gini = SI.POV.GINI,
+                        Undernourishment = SN.ITK.DEFC.ZS)
+
+WorldBankData2$country_name <- WorldBankData2$country
+WorldBankData2$country <- as.factor(WorldBankData2$country)
+WorldBankData2$country <- gsub("Venezuela, RB", "Venezuela", WorldBankData2$country)
+save(WorldBankData2, file = "WorldBankData2.RData")
+
+WBD2 <- WorldBankData2 %>%
+  plot_ly(x = ~Undernourishment, 
+          y = ~life_expectancy, 
+          size = ~population, 
+          color = ~region,
+          frame = ~year, 
+          text = ~country, 
+          hoverinfo = "text",
+         #sizes = c(12,20),
+         sizes = c(100,400),
+          type = 'scatter',
+          mode = 'markers',
+          #mode='text',
+          showlegend = TRUE) %>%
+  layout(title = "Life Expectancy by Undernourishment", 
+         yaxis = list(title = "Life Expectancy"))
+
+WBD2
+
+
+
+```
