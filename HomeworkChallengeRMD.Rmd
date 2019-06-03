@@ -92,17 +92,20 @@ theme(axis.title.x = element_text(hjust=0.5, face = "bold"))+
 ```
 
 
-##Animating the graph with plotly
+##Animating the graph with ggplotly
+
+Click "Play" below to watch the life expectancies change over time. 
 
 ``` {r}
 library(plotly)
+library(dplyr)
 
-p <- ggplot(data= WorldBankData,
+p <-ggplot(WorldBankData,
        aes(x=year,
            y=life_expectancy,
            color=country,
            frame=year))+
-  geom_line(size=.9)+
+  geom_point(size=3)+
   labs(title = "Life Expectancy Over Time",
        x="Year",
        y="Life Expectancy")+
@@ -113,8 +116,7 @@ theme(axis.title.x = element_text(hjust=0.5, face = "bold"))+
   theme(legend.title = element_blank())+
   theme(legend.text = element_text(face = "bold"))
 
-p<- ggplotly(p)
-
+ggplotly(p)
 ```
 
 
