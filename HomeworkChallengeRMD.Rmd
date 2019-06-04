@@ -1,0 +1,176 @@
+---
+title: "Homework Challenge"
+author: "Alanna Kaiser"
+date: "5/31/2019"
+output:
+  html_document:
+    code_folding: "hide"
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval=TRUE, echo =TRUE, warning = FALSE, message=FALSE)
+```
+
+
+## Creating Data Tables with World Bank Data
+
+Utilizing the World Bank API, I was able to pull country-level data for a variety of variables like income, life expectancy, etc. and present them in the following interactive data table. As I’m interested in Nepal as the site of my summer global independent study, I will utilize that country’s data for the following examples.  
+
+```{r}
+library(WDI)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(DT)
+
+WorldBankData<- WDI(country = c("US","NPL"),
+                    indicator=c("SI.POV.GINI", # Gini
+                                "NY.GDP.PCAP.CD", # GDP
+                                "SP.DYN.LE00.IN", # life expectancy
+                                "SP.POP.TOTL", # population
+                                "SN.ITK.DEFC.ZS"), # undernourishment
+                    start = 1990,
+                    end=2017,
+                    extra = TRUE)
+save(WorldBankData, file = "WorldBankData.RData")
+
+WorldBankData <- dplyr::rename(WorldBankData, 
+                        GDP = NY.GDP.PCAP.CD,
+                        life_expectancy = SP.DYN.LE00.IN, 
+                        population = SP.POP.TOTL,
+                        Gini = SI.POV.GINI,
+                        undernourishment = SN.ITK.DEFC.ZS)
+
+WorldBankData$country_name <- WorldBankData$country
+WorldBankData$country <- as.factor(WorldBankData$country)
+save(WorldBankData, file = "WorldBankData.RData")
+
+WorldBankData %>% 
+  select(country, 
+         region,
+         year,
+         GDP, 
+         life_expectancy, 
+         population, 
+         Gini,
+         undernourishment) %>%
+  datatable(rownames = FALSE,
+            filter = 'top', 
+            extensions = 'Buttons', 
+            options = list(
+              dom = 'frtipB',
+              buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+
+```
+
+
+
+
+##Simple Graph of Life Expectancy by Country
+
+That data is then translated into a simple line graph with the ggplot2 package. 
+
+``` {r}
+
+ggplot(WorldBankData,
+       aes(x=year,
+           y=life_expectancy,
+           color=country,
+           frame=year))+
+  geom_line(size=.9)+
+  labs(title = "Life Expectancy Over Time",
+       x="Year",
+       y="Life Expectancy")+
+theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14))+
+theme(axis.title.x = element_text(hjust=0.5, face = "bold"))+
+  theme(axis.title.y = element_text(face = "bold"))+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())+
+  theme(legend.text = element_text(face = "bold"))
+
+```
+
+
+##Animating the graph with ggplotly
+
+Click "Play" below to watch the life expectancies change over time. 
+
+``` {r}
+library(plotly)
+library(dplyr)
+
+p <-ggplot(WorldBankData,
+       aes(x=year,
+           y=life_expectancy,
+           color=country,
+           frame=year))+
+  geom_point(size=3)+
+  labs(title = "Life Expectancy Over Time",
+       x="Year",
+       y="Life Expectancy")+
+theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14))+
+theme(axis.title.x = element_text(hjust=0.5, face = "bold"))+
+  theme(axis.title.y = element_text(face = "bold"))+
+  theme(legend.position = "bottom")+
+  theme(legend.title = element_blank())+
+  theme(legend.text = element_text(face = "bold"))
+
+ggplotly(p)
+```
+
+
+##Graphing Multiple Outcomes by Year
+
+```{r}
+library(WDI)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(DT)
+
+WorldBankData2<- WDI(country = c("US","NPL","IND","CAN","CHN", "FIN","TZA","VEN", "KEN", "JAM", "LBR"),
+                    indicator=c("SI.POV.GINI", # Gini
+                                "NY.GDP.PCAP.CD", # GDP
+                                "SP.DYN.LE00.IN", # life expectancy
+                                "SP.POP.TOTL", # population
+                                "SN.ITK.DEFC.ZS"), # undernourishment
+                    start = 1980,
+                    end=2017,
+                    extra = TRUE)
+save(WorldBankData2, file = "WorldBankData2.RData")
+
+WorldBankData2 <- dplyr::rename(WorldBankData2, 
+                        GDP = NY.GDP.PCAP.CD,
+                        life_expectancy = SP.DYN.LE00.IN, 
+                        population = SP.POP.TOTL,
+                        Gini = SI.POV.GINI,
+                        Undernourishment = SN.ITK.DEFC.ZS)
+
+WorldBankData2$country_name <- WorldBankData2$country
+WorldBankData2$country <- as.factor(WorldBankData2$country)
+WorldBankData2$country <- gsub("Venezuela, RB", "Venezuela", WorldBankData2$country)
+save(WorldBankData2, file = "WorldBankData2.RData")
+
+WBD2 <- WorldBankData2 %>%
+  plot_ly(x = ~Undernourishment, 
+          y = ~life_expectancy, 
+          size = ~population, 
+          color = ~region,
+          frame = ~year, 
+          text = ~country, 
+          hoverinfo = "text",
+         #sizes = c(12,20),
+         sizes = c(100,400),
+          type = 'scatter',
+          mode = 'markers',
+          #mode='text',
+          showlegend = TRUE) %>%
+  layout(title = "Life Expectancy by Undernourishment", 
+         yaxis = list(title = "Life Expectancy"))
+
+WBD2
+
+
+
+```
