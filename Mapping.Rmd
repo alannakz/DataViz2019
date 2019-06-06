@@ -53,7 +53,7 @@ SFIncomeData %>%
 
 ## Clickable Maps!
 
-```{r, echo=FALSE}
+```{r}
 library(mapview)
 
 mapview(SFIncomeData, zcol = "estimate", legend = TRUE, layer.name="Median Family Income")
