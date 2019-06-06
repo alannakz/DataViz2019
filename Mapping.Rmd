@@ -1,0 +1,62 @@
+---
+title: "Playing with Mapping"
+author: "Alanna Kaiser"
+date: "6/6/2019"
+output: 
+  html_document:
+    number_sections: no
+    toc: yes
+    toc_float: 
+      collapsed: false
+      smooth_scroll: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message= FALSE,
+                      warning= FALSE)
+```
+
+
+##A Basic Map of Median Houshold Income in San Francisco
+
+```{r, echo=FALSE, include=FALSE}
+library(tidycensus)
+library(tidyverse)
+
+options(tigris_use_cache= TRUE)
+
+SFIncomeData <- get_acs(state = "CA",
+                        county = "San Francisco",
+                        geography = "tract",
+                        variables= "B19013_001",
+                        geometry= TRUE
+                        )
+
+SFIncomeData %>% drop_na()
+
+SFIncomeData = filter(SFIncomeData, !(NAME %in% c("Census Tract 9804.01, San Francisco County, California", "Census Tract 179.02, San Francisco County, California", "Census Tract 9806, San Francisco County, California")))
+
+```
+
+```{r}
+
+SFIncomeData %>%
+  ggplot(aes(fill=estimate))+
+  geom_sf()+
+  labs(title = "Median Household Income in SF by Census Tract", subtitle = "Data pulled with Census API", fill= "Median Family Income")+
+   scale_fill_viridis_c(option = "magma")
+
+```
+
+
+## Clickable Maps!
+
+```{r, echo=FALSE}
+library(mapview)
+
+mapview(SFIncomeData, zcol = "estimate", legend = TRUE, layer.name="Median Family Income")
+ 
+
+```
