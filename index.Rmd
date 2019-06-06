@@ -80,7 +80,8 @@ In the coming weeks, I will add content to this online space that showcases my g
 
 * [SW670: Final Portfolio](https://alannakz.github.io/DataViz2019/Winter_Portfolio.html)
 * [Homework Challenge 6/3/19- Samples of Data Manipulation](https://alannakz.github.io/DataViz2019/HomeworkChallengeRMD.html)
-* [Other samples of work]]]
+* [Fun With Mapping 6/6/2019](https://alannakz.github.io/DataViz2019/Mapping.html) 
+* [Other samples of work]]
 
 ## My Blog Posts
 
