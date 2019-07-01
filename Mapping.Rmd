@@ -51,7 +51,8 @@ SFIncomeData %>%
 ```
 
 
-## Clickable Maps!
+## Interactive Income Map Made with R
+Hover the cursor over this map to look at median family income in different census tracts across San Francisco. Click a census tract to see other information associated with that tract, including the Margin of Error for MFI. 
 
 ```{r}
 library(mapview)
@@ -59,3 +60,16 @@ library(mapview)
 mapview(SFIncomeData, zcol = "estimate", legend = TRUE, layer.name="Median Family Income")
  
 ```
+
+## Map of Bayview, SF Parks
+The map below depicts all SF parks in the Bayview neighborhood, a key area of operation for Habtiat for Humanity Greater San Francisco's Neighborhood Revitalization Parks and Green Space program.
+
+```{r}
+library(png)
+library(grid)
+
+img2<-readPNG("~/Box Sync/alannakz/Git/DataViz2019/Playing with Mapping/BayviewParks.png")
+grid.raster(img2)
+
+```
+
